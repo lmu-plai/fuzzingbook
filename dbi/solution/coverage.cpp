@@ -7,6 +7,8 @@
  * 
  * This software and the related documents are provided as is, with no express or implied
  * warranties, other than those that are expressly stated in the License.
+ * 
+ * Modifications by Johannes Kinder, incorporating code from Axel Souchet
  */
 
 #include <iostream>
@@ -18,37 +20,44 @@ using std::ios;
 using std::string;
 using std::endl;
 
+typedef std::map<ADDRINT, UINT32> BASIC_BLOCKS_INFO_T;
+BASIC_BLOCKS_INFO_T basic_blocks_info;
+
 ofstream OutFile;
 
-// The running count of instructions is kept here
-// make it static to help the compiler optimize docount
-static UINT64 icount = 0;
-
-// This function is called before every block
-VOID docount(UINT32 c) { icount += c; }
+VOID handle_basic_block(UINT32 bb_insn_count, ADDRINT address_bb) {
+    basic_blocks_info[address_bb] = bb_insn_count;
+}
     
 // Pin calls this function every time a new basic block is encountered
-// It inserts a call to docount
+// It inserts a call to handle_basic_block
 VOID Trace(TRACE trace, VOID *v)
 {
     // Visit every basic block  in the trace
     for (BBL bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl))
     {
         // Insert a call to docount before every bbl, passing the number of instructions
-        BBL_InsertCall(bbl, IPOINT_BEFORE, (AFUNPTR)docount, IARG_UINT32, BBL_NumIns(bbl), IARG_END);
+        BBL_InsertCall(bbl, IPOINT_ANYWHERE, (AFUNPTR)handle_basic_block, 
+                       IARG_UINT32, BBL_NumIns(bbl), IARG_ADDRINT, BBL_Address(bbl), IARG_END);
     }
+    
 }
 
 KNOB<string> KnobOutputFile(KNOB_MODE_WRITEONCE, "pintool",
-    "o", "inscount.out", "specify output file name");
+    "o", "coverage.out", "specify output file name");
 
 // This function is called when the application exits
 VOID Fini(INT32 code, VOID *v)
 {
-    // Write to a file since cout and cerr maybe closed by the application
+    // Write to a file since cout and cerr may be closed by the application
     OutFile.setf(ios::showbase);
-    OutFile << "Count " << icount << endl;
+    
+    for(BASIC_BLOCKS_INFO_T::const_iterator it = basic_blocks_info.begin(); it != basic_blocks_info.end(); ++it) {
+        OutFile << it->first << endl;
+    }
+
     OutFile.close();
+
 }
 
 /* ===================================================================== */
@@ -57,7 +66,7 @@ VOID Fini(INT32 code, VOID *v)
 
 INT32 Usage()
 {
-    cerr << "This tool counts the number of dynamic instructions executed" << endl;
+    cerr << "This tool records all basic blocks executed" << endl;
     cerr << endl << KNOB_BASE::StringKnobSummary() << endl;
     return -1;
 }
