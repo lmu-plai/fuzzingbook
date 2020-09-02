@@ -13134,10 +13134,8 @@ code, kbd, pre, samp {
   font-family: 'Fira Mono', 'Source Code Pro', monospace;
 }
 
-
-
 /* Font sizes */
-/* We use somewhat smaller fonts for small devices */
+/* We use somewhat smaller fonts for small devices and print */
 
 p, li {
 	font-size: 16px;
@@ -13147,6 +13145,12 @@ p, li {
     p, li {
     	font-size: 14px;
     	line-height: 24px;
+    }
+}
+@media print {
+    p, li {
+    	font-size: 12px;
+    	line-height: 18px;
     }
 }
 
@@ -13167,6 +13171,16 @@ code, kbd, pre, samp {
     .CodeMirror pre {
       font-size: 12px;
       line-height: 18px;
+    }
+}
+@media print {
+    code, kbd, pre, samp {
+      font-size: 10px !important;
+      line-height: 14px;
+    }
+    .CodeMirror pre {
+      font-size: 10px !important;
+      line-height: 14px;
     }
 }
 
@@ -13212,6 +13226,16 @@ h4, h5, h6 {
     h3 { font-size: 22px!important; }
     h4, h5, h6 {
         { font-size: 18px!important; }
+    };
+}
+/* Print */
+@media print {
+    section > h1 { font-size: 32px!important; }
+    h1 { font-size: 26px!important; }
+    h2 { font-size: 22px!important; }
+    h3 { font-size: 18px!important; }
+    h4, h5, h6 {
+        { font-size: 14px!important; }
     };
 }
 
@@ -13267,10 +13291,18 @@ h4, h5, h6 {
 body {
     background-color: #F0F0F0;
 }
+/* But not when it's print */
+@media print {
+    background-color: white;
+}
 
 .container {
     background-color: #F8F8F8!important;    
 }
+@media print {
+    background-color: white!important;
+}
+
 
 .input_area, .output_area {
     background-color: white!important;    
@@ -13288,7 +13320,7 @@ body {
 
 /* Headers are dark red, too */
 h1, h2, h3 {
-    color: #B03A2E;
+    color: #B03A2E!important;
 }
 
 h4, h5 {
@@ -13332,6 +13364,12 @@ a:active {
     line-height: 16px;
     margin-top: 1cm;
 }
+@media print {
+    .imprint {
+    	font-size: 9px;
+        line-height: 12px;
+    }
+}
 
 /* Synopsis */
 .synopsis {
@@ -13343,10 +13381,30 @@ a:active {
 }
 
 
+/* Details */
+details[open] summary ~ * {
+  animation: sweep .5s ease-in-out;
+}
+
+@keyframes sweep {
+  0%    {opacity: 0; margin-top: -30px}
+  100%  {opacity: 1; margin-top: 0px}
+}
+
+
+
+
 /* Solutions */
 .solution_link {
 	/* font-size: 12px; */
     font-style: italic;
+}
+@media print {
+    .solution_link {
+    	font-size: 9px;
+        line-height: 12px;
+        font-style: italic;
+    }
 }
 
 
@@ -13409,6 +13467,10 @@ a.import {
     color: blue;
 }
 
+a.import[href]:after {
+    content: "" !important;  /* Avoid adding links for imports */
+}
+
 a.import:visited {
     color: darkblue;
 }
@@ -13450,6 +13512,7 @@ article {
   }
 }
 
+
 /* CSS Menu */
 #cssmenu,
 #cssmenu ul,
@@ -13476,6 +13539,7 @@ article {
   margin: 0;
   padding: 0;
 }
+
 #cssmenu > ul,
 #cssmenu > ol {
   list-style: inside none;
@@ -13674,6 +13738,19 @@ article {
   border-top: 5px solid #ffffff;
 }
 
+/* On print, do not show the menu */
+@media print {
+    #cssmenu {
+        height: 0px;
+        display: none;
+    }
+    #cssmenu > ul {
+        display: none;
+    }
+    #cssmenu > ol {
+        display: none;
+    }
+}
 
     </style>
 
@@ -13842,10 +13919,10 @@ a.anchor-link {
 </ul>
 <p>Both functions can return <code>None</code> to not interfere with grammar production at all.</p>
 <p>To attach a function <code>F</code> to an individual expansion <code>S</code> in a grammar, replace <code>S</code> with a pair</p>
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">opts</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="n">F</span><span class="p">))</span>   <span class="c1"># Set a function to be executed before expansion</span>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">opts</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="n">F</span><span class="p">))</span>   <span class="c1"># Set a function to be executed before expansion</span>
 </pre></div>
 <p>or</p>
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">opts</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">post</span><span class="o">=</span><span class="n">F</span><span class="p">))</span>  <span class="c1"># Set a function to be executed after expansion</span>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">opts</span><span class="p">(</span><span class="n">post</span><span class="o">=</span><span class="n">F</span><span class="p">))</span>  <span class="c1"># Set a function to be executed after expansion</span>
 </pre></div>
 <p>Here is an example, To take an area code from a list that is given programmatically, we can write:</p>
 <div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">Grammars</span> <span class="kn">import</span> <span class="n">US_PHONE_GRAMMAR</span><span class="p">,</span> <span class="n">extend_grammar</span><span class="p">,</span> <span class="n">opts</span>
@@ -14678,7 +14755,7 @@ warning: option &#39;pre&#39; is not supported
 Expanding &lt;amount&gt; randomly
 Tree: $&lt;float&gt;
 Expanding &lt;float&gt; randomly
-&lt;function &lt;lambda&gt; at 0x10d5147b8&gt;() = 382087.72
+&lt;function &lt;lambda&gt; at 0x7f887524dae8&gt;() = 382087.72
 Replacing &lt;integer&gt;.&lt;digit&gt;&lt;digit&gt; by 382087.72
 Tree: $382087.72
 &#39;$382087.72&#39;
@@ -15771,7 +15848,7 @@ Tree: $382087.72
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The main work takes place in this helper method <code>run_post_functions_locally()</code>.  It runs the post-expansion function $f$ with <code>run_post_functions()</code> only on the current node by setting <code>depth</code> to zero, as any completed subtrees would have their post-expansion functions ran already.  If $f$ returns <code>False</code>, <code>run_post_functions_locally()</code> returns an unexpanded symbol, such that the main driver can try another expansion.  It does so for up to 10 times (configurable via a <code>replacement_attempts</code> parameter during construction); after that, it raises a <code>RestartExpansionException</code> to restart creating the tree from scratch.</p>
+<p>The main work takes place in the helper method <code>run_post_functions_locally()</code>.  It runs the post-expansion function $f$ with <code>run_post_functions()</code> only on the current node by setting <code>depth</code> to zero, as any completed subtrees would have their post-expansion functions ran already.  If $f$ returns <code>False</code>, <code>run_post_functions_locally()</code> returns an unexpanded symbol, such that the main driver can try another expansion.  It does so for up to 10 times (configurable via a <code>replacement_attempts</code> parameter during construction); after that, it raises a <code>RestartExpansionException</code> to restart creating the tree from scratch.</p>
 
 </div>
 </div>
@@ -16964,10 +17041,10 @@ u=-++33*+-6/(2*3*2+1/9-4*1-8)*((8.5))
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>To attach a function <code>F</code> to an individual expansion <code>S</code> in a grammar, replace <code>S</code> with a pair</p>
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">opts</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">pre</span><span class="o">=</span><span class="n">F</span><span class="p">))</span>   <span class="c1"># Set a function to be executed before expansion</span>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">opts</span><span class="p">(</span><span class="n">pre</span><span class="o">=</span><span class="n">F</span><span class="p">))</span>   <span class="c1"># Set a function to be executed before expansion</span>
 </pre></div>
 <p>or</p>
-<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">opts</span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">post</span><span class="o">=</span><span class="n">F</span><span class="p">))</span>  <span class="c1"># Set a function to be executed after expansion</span>
+<div class="highlight"><pre><span></span><span class="p">(</span><span class="n">S</span><span class="p">,</span> <span class="n">opts</span><span class="p">(</span><span class="n">post</span><span class="o">=</span><span class="n">F</span><span class="p">))</span>  <span class="c1"># Set a function to be executed after expansion</span>
 </pre></div>
 
 </div>

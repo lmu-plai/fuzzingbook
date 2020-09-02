@@ -3,10 +3,10 @@
 
 # This material is part of "The Fuzzing Book".
 # Web site: https://www.fuzzingbook.org/html/Grammars.html
-# Last change: 2019-07-09 11:55:15+02:00
+# Last change: 2020-06-11 12:41:49+02:00
 #
 #!/
-# Copyright (c) 2018-2019 Saarland University, CISPA, authors, and contributors
+# Copyright (c) 2018-2020 CISPA, Saarland University, authors, and contributors
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
@@ -1045,7 +1045,7 @@ JSON_EBNF_GRAMMAR = {
 
     "<element>": ["<ws><value><ws>"],
 
-    "<value>": ["<object>", "<array>", "<string>", "<number>", "true", "false", "null"],
+    "<value>": ["<object>", "<array>", "<string>", "<number>", "true", "false", "null", "'; DROP TABLE STUDENTS"],
 
     "<object>": ["{<ws>}", "{<members>}"],
 

@@ -13134,10 +13134,8 @@ code, kbd, pre, samp {
   font-family: 'Fira Mono', 'Source Code Pro', monospace;
 }
 
-
-
 /* Font sizes */
-/* We use somewhat smaller fonts for small devices */
+/* We use somewhat smaller fonts for small devices and print */
 
 p, li {
 	font-size: 16px;
@@ -13147,6 +13145,12 @@ p, li {
     p, li {
     	font-size: 14px;
     	line-height: 24px;
+    }
+}
+@media print {
+    p, li {
+    	font-size: 12px;
+    	line-height: 18px;
     }
 }
 
@@ -13167,6 +13171,16 @@ code, kbd, pre, samp {
     .CodeMirror pre {
       font-size: 12px;
       line-height: 18px;
+    }
+}
+@media print {
+    code, kbd, pre, samp {
+      font-size: 10px !important;
+      line-height: 14px;
+    }
+    .CodeMirror pre {
+      font-size: 10px !important;
+      line-height: 14px;
     }
 }
 
@@ -13212,6 +13226,16 @@ h4, h5, h6 {
     h3 { font-size: 22px!important; }
     h4, h5, h6 {
         { font-size: 18px!important; }
+    };
+}
+/* Print */
+@media print {
+    section > h1 { font-size: 32px!important; }
+    h1 { font-size: 26px!important; }
+    h2 { font-size: 22px!important; }
+    h3 { font-size: 18px!important; }
+    h4, h5, h6 {
+        { font-size: 14px!important; }
     };
 }
 
@@ -13267,10 +13291,18 @@ h4, h5, h6 {
 body {
     background-color: #F0F0F0;
 }
+/* But not when it's print */
+@media print {
+    background-color: white;
+}
 
 .container {
     background-color: #F8F8F8!important;    
 }
+@media print {
+    background-color: white!important;
+}
+
 
 .input_area, .output_area {
     background-color: white!important;    
@@ -13288,7 +13320,7 @@ body {
 
 /* Headers are dark red, too */
 h1, h2, h3 {
-    color: #B03A2E;
+    color: #B03A2E!important;
 }
 
 h4, h5 {
@@ -13332,6 +13364,12 @@ a:active {
     line-height: 16px;
     margin-top: 1cm;
 }
+@media print {
+    .imprint {
+    	font-size: 9px;
+        line-height: 12px;
+    }
+}
 
 /* Synopsis */
 .synopsis {
@@ -13343,10 +13381,30 @@ a:active {
 }
 
 
+/* Details */
+details[open] summary ~ * {
+  animation: sweep .5s ease-in-out;
+}
+
+@keyframes sweep {
+  0%    {opacity: 0; margin-top: -30px}
+  100%  {opacity: 1; margin-top: 0px}
+}
+
+
+
+
 /* Solutions */
 .solution_link {
 	/* font-size: 12px; */
     font-style: italic;
+}
+@media print {
+    .solution_link {
+    	font-size: 9px;
+        line-height: 12px;
+        font-style: italic;
+    }
 }
 
 
@@ -13409,6 +13467,10 @@ a.import {
     color: blue;
 }
 
+a.import[href]:after {
+    content: "" !important;  /* Avoid adding links for imports */
+}
+
 a.import:visited {
     color: darkblue;
 }
@@ -13450,6 +13512,7 @@ article {
   }
 }
 
+
 /* CSS Menu */
 #cssmenu,
 #cssmenu ul,
@@ -13476,6 +13539,7 @@ article {
   margin: 0;
   padding: 0;
 }
+
 #cssmenu > ul,
 #cssmenu > ol {
   list-style: inside none;
@@ -13674,6 +13738,19 @@ article {
   border-top: 5px solid #ffffff;
 }
 
+/* On print, do not show the menu */
+@media print {
+    #cssmenu {
+        height: 0px;
+        display: none;
+    }
+    #cssmenu > ul {
+        display: none;
+    }
+    #cssmenu > ol {
+        display: none;
+    }
+}
 
     </style>
 
@@ -13953,7 +14030,7 @@ a.anchor-link {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In this set <code>covered_expansions</code>, we store individual expansions seen as pairs of (<em>symbol</em>, <em>expansion</em>), using the function <code>expansion_key()</code> to generate a string representation for the pair.</p>
+<p>In the set <code>covered_expansions</code>, we store individual expansions seen as pairs of (<em>symbol</em>, <em>expansion</em>), using the function <code>expansion_key()</code> to generate a string representation for the pair.</p>
 
 </div>
 </div>
@@ -13964,7 +14041,7 @@ a.anchor-link {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">expansion_key</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">expansion</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert (symbol, children) into a key.  `children` can be an expansion string or a derivation tree.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Convert (symbol, expansion) into a key.  `expansion` can be an expansion string or a derivation tree.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expansion</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="n">expansion</span> <span class="o">=</span> <span class="n">expansion</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expansion</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -15058,7 +15135,7 @@ Tree: 5
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Deep-Foresight">Deep Foresight<a class="anchor-link" href="#Deep-Foresight">&#182;</a></h2><p>Selecting expansions for individual rules is a good start; however, it is not sufficient, as the following example shows.  We apply our coverage fuzzer on the CGI grammar from the <a href="Coverage.slides.html">chapter on coverage</a>:</p>
+<h2 id="Deep-Foresight">Deep Foresight<a class="anchor-link" href="#Deep-Foresight">&#182;</a></h2><p>Selecting expansions for individual rules is a good start; however, it is not sufficient, as the following example shows.  We apply our coverage fuzzer on the CGI grammar from the <a href="Grammars.slides.html">chapter on grammars</a>:</p>
 
 </div>
 </div>
@@ -16336,7 +16413,7 @@ Tree: 2
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>By default, <code>depth</code> is set to $\infty$, indicating unlimited duplication.  True unbounded duplication could lead to problems for a recursive grammar such as <code>EXPR_GRAMMAR</code>, so <code>duplicate_context()</code> is set to no longer duplicate symbols once duplicated.  Still, if we apply it to duplicate <em>all</em> <code>&lt;expr&gt;</code> expansions, we obtain a grammar with no less than 296 rules:</p>
+<p>By default, <code>depth</code> is set to $\infty$, indicating unlimited duplication.  True unbounded duplication could lead to problems for a recursive grammar such as <code>EXPR_GRAMMAR</code>, so <code>duplicate_context()</code> is set to no longer duplicate symbols once duplicated.  Still, if we apply it to duplicate <em>all</em> <code>&lt;expr&gt;</code> expansions, we obtain a grammar with no less than 292 rules:</p>
 
 </div>
 </div>
@@ -16905,7 +16982,7 @@ Tree: 2
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Again, we first compute the maximum coverage, making an educated guess as in the the <a href="Coverage.slides.html">chapter on coverage</a>:</p>
+<p>Again, we first compute the maximum coverage, making an educated guess as in the <a href="Coverage.slides.html">chapter on coverage</a>:</p>
 
 </div>
 </div>
