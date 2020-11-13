@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <set>
 #include "pin.H"
 using std::cerr;
 using std::ofstream;
@@ -20,13 +21,13 @@ using std::ios;
 using std::string;
 using std::endl;
 
-typedef std::map<ADDRINT, UINT32> BASIC_BLOCKS_INFO_T;
-BASIC_BLOCKS_INFO_T basic_blocks_info;
+typedef std::set<ADDRINT> COVERED_BLOCKS_T;
+COVERED_BLOCKS_T covered_blocks;
 
 ofstream OutFile;
 
-VOID handle_basic_block(UINT32 bb_insn_count, ADDRINT address_bb) {
-    basic_blocks_info[address_bb] = bb_insn_count;
+VOID handle_basic_block(ADDRINT address_bb) {
+    covered_blocks.insert(address_bb);
 }
     
 // Pin calls this function every time a new basic block is encountered
@@ -36,9 +37,9 @@ VOID Trace(TRACE trace, VOID *v)
     // Visit every basic block  in the trace
     for (BBL bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl))
     {
-        // Insert a call to docount before every bbl, passing the number of instructions
+        // Insert a call to handle_basic_block before every bbl, passing the number of instructions
         BBL_InsertCall(bbl, IPOINT_ANYWHERE, (AFUNPTR)handle_basic_block, 
-                       IARG_UINT32, BBL_NumIns(bbl), IARG_ADDRINT, BBL_Address(bbl), IARG_END);
+                       IARG_ADDRINT, BBL_Address(bbl), IARG_END);
     }
     
 }
@@ -52,8 +53,8 @@ VOID Fini(INT32 code, VOID *v)
     // Write to a file since cout and cerr may be closed by the application
     OutFile.setf(ios::showbase);
     
-    for(BASIC_BLOCKS_INFO_T::const_iterator it = basic_blocks_info.begin(); it != basic_blocks_info.end(); ++it) {
-        OutFile << it->first << endl;
+    for(COVERED_BLOCKS_T::const_iterator it = covered_blocks.begin(); it != covered_blocks.end(); ++it) {
+        OutFile << *it << endl;
     }
 
     OutFile.close();
