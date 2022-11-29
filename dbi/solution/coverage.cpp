@@ -21,29 +21,35 @@ using std::ios;
 using std::string;
 using std::endl;
 
+// Define a shorthand type for a set of addresses
 typedef std::set<ADDRINT> COVERED_BLOCKS_T;
+
+// Define a set of addresses as a global variable
 COVERED_BLOCKS_T covered_blocks;
 
+// Define an output file stream as a global variable
 ofstream OutFile;
 
+// This is the analysis routine actually instrumented into the target code
 VOID handle_basic_block(ADDRINT address_bb) {
     covered_blocks.insert(address_bb);
 }
-    
+
+// Instrumentation routine
 // Pin calls this function every time a new basic block is encountered
-// It inserts a call to handle_basic_block
 VOID Trace(TRACE trace, VOID *v)
 {
     // Visit every basic block  in the trace
     for (BBL bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl))
     {
-        // Insert a call to handle_basic_block before every bbl, passing the number of instructions
+        // Insert a call to handle_basic_block before every bbl, passing the address of the block
         BBL_InsertCall(bbl, IPOINT_ANYWHERE, (AFUNPTR)handle_basic_block, 
                        IARG_ADDRINT, BBL_Address(bbl), IARG_END);
     }
     
 }
 
+// Add another command line option to specify the output filename
 KNOB<string> KnobOutputFile(KNOB_MODE_WRITEONCE, "pintool",
     "o", "coverage.out", "specify output file name");
 
@@ -53,10 +59,12 @@ VOID Fini(INT32 code, VOID *v)
     // Write to a file since cout and cerr may be closed by the application
     OutFile.setf(ios::showbase);
     
+    // Dump the set to the file
     for(COVERED_BLOCKS_T::const_iterator it = covered_blocks.begin(); it != covered_blocks.end(); ++it) {
         OutFile << *it << endl;
     }
 
+    // Close the output file stream
     OutFile.close();
 
 }
